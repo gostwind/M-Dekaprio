@@ -1,3 +1,4 @@
+
 /**
  * App.jsx  ─ Root Application Component
  * ───────────────────────────────────────────────────────────
@@ -71,6 +72,7 @@ const SmartSearch = lazy(() => import('@/pages/SmartSearch'));
 const VibeyPage = lazy(() => import('@/pages/VibeyPage'));
 const ThemeStore = lazy(() => import('@/pages/ThemeStore'));
 const Library = lazy(() => import('@/pages/Library'));
+const ContactPage = lazy(() => import('@/pages/ContactPage'));
 
 /**
  * Premium Loading Fallback - Cinematic & Polished
@@ -241,6 +243,7 @@ const App = () => {
             <Route path="/terms" element={<TermsOfService />} />
             <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/cookies" element={<CookiePreferences />} />
+            <Route path="/contact" element={<ContactPage />} />
             <Route path="/taste-matcher" element={<ProtectedRoute><TasteMatcher /></ProtectedRoute>} />
             <Route path="/smart-search" element={<ProtectedRoute><SmartSearch /></ProtectedRoute>} />
             <Route path="/vibey" element={<ProtectedRoute><VibeyPage /></ProtectedRoute>} />
