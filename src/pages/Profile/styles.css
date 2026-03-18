@@ -1,0 +1,12 @@
+/* ================================================================
+   PROFILE / DASHBOARD PAGE — Modular Styles
+   Split into logical files for better maintenance.
+   ================================================================ */
+
+@import './styles/layout.css';
+@import './styles/hero.css';
+@import './styles/account.css';
+@import './styles/empty.css';
+@import './styles/scroller.css';
+@import './styles/watchlist.css';
+@import './styles/management.css';

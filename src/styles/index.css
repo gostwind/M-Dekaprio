@@ -1,0 +1,295 @@
+/* ================================================================
+   Vibeo — Global Styles
+   Inspired by Yorumi (anime streaming) & Mercy (movie streaming).
+   Design language: deep dark backgrounds, vivid accent colours,
+   horizontal carousel rows, hero spotlight banners.
+   ================================================================ */
+
+@import "tailwindcss";
+
+/* ── Google Fonts (Inter) are pulled via index.html ── */
+
+/* ================================================================
+   DESIGN TOKENS & THEMES
+   ================================================================ */
+:root {
+  /* Common */
+  --c-text: #ececec;
+  --c-text2: #b0b0bc;
+  --c-muted: #6b6b80;
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-xl: 20px;
+  --r-pill: 999px;
+
+  /* Status colours */
+  --c-gold: #f59e0b;
+  --c-green: #22c55e;
+  --c-red: #ef4444;
+  --c-blue: #3b82f6;
+
+  /* Layout Preferences (Defaults) */
+  --card-min-width: 140px;
+  --glass-blur: blur(0px);
+
+  /* Constant colors for components that should stay dark/light regardless of theme */
+  --c-white: #ffffff;
+  --c-black: #000000;
+
+  /* Z-Index Hierarchy */
+  --z-header: 200;
+  --z-dropdown: 1000;
+  --z-modal: 2000;
+  --z-overlay: 3000;
+}
+
+/* ================================================================
+   THEMES & PATTERNS (Overrides)
+   ================================================================ */
+@import "./themes/default.css";
+@import "./themes/ocean.css";
+@import "./themes/crimson.css";
+@import "./themes/forest.css";
+@import "./themes/midnight.css";
+@import "./themes/rose.css";
+@import "./themes/coffee.css";
+@import "./themes/aurora.css";
+@import "./themes/abyss.css";
+@import "./themes/cyberwire.css";
+@import "./themes/sunset.css";
+@import "./themes/light.css";
+@import "./themes/oled.css";
+@import "./themes/nord.css";
+@import "./themes/dracula.css";
+@import "./themes/slate.css";
+@import "./themes/terminal.css";
+@import "./themes/animated.css";
+@import "./patterns.css";
+
+
+body[data-card-size="small"] {
+  --card-min-width: 110px;
+}
+
+body[data-card-size="large"] {
+  --card-min-width: 170px;
+}
+
+body[data-glass-level="subtle"] {
+  --glass-blur: blur(8px);
+}
+
+body[data-glass-level="glassy"] {
+  --glass-blur: blur(16px);
+}
+
+
+/* ================================================================
+   BASE RESET
+   ================================================================ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+  overflow-y: auto;
+  /* Hide scrollbar but keep functionality */
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+}
+
+html::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari, and Opera */
+}
+
+/* Ensure all scroll containers have hidden scrollbars */
+[style*="overflow-y: auto"],
+.overflow-y-auto,
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+[style*="overflow-y: auto"]::-webkit-scrollbar,
+.overflow-y-auto::-webkit-scrollbar,
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  background: var(--c-bg);
+  color: var(--c-text);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  overflow: visible;
+  /* Prevent body-level scrollbars */
+}
+
+/* ── Scroll Lock ── */
+body.body-lock,
+html.body-lock {
+  overflow: hidden !important;
+  touch-action: none;
+}
+
+/* ── Special Page Utility (Invisible Scrolling) ── */
+html.no-scrollbar,
+html.no-scrollbar body,
+html.no-scrollbar * {
+  scrollbar-width: none !important;
+  /* Firefox */
+  -ms-overflow-style: none !important;
+  /* IE/Edge */
+}
+
+html.no-scrollbar::-webkit-scrollbar,
+html.no-scrollbar *::-webkit-scrollbar {
+  display: none !important;
+  /* Chrome/Safari */
+}
+
+html.no-scrollbar,
+html.no-scrollbar body {
+  overflow: auto !important;
+  /* Allow scrolling */
+}
+
+a {
+  color: var(--c-accent-lt);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+img {
+  display: block;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar {
+  height: 4px;
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--c-surface3);
+  border-radius: var(--r-pill);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* ================================================================
+   ANIMATIONS
+   ================================================================ */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -600px 0;
+  }
+
+  100% {
+    background-position: 600px 0;
+  }
+}
+
+@keyframes spinRing {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes glow-pulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 18px var(--c-accent-glow);
+  }
+
+  50% {
+    box-shadow: 0 0 36px var(--c-accent-glow);
+  }
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.45s ease both;
+}
+
+/* ================================================================
+   LAYOUT — page shell
+   ================================================================ */
+.page-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow-x: hidden;
+  /* Use simple fade-in here to avoid transform-related fixed position bugs */
+  animation: fadeIn 0.4s ease-out both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ================================================================
+   ROWS CONTAINER
+   ================================================================ */
+.rows-container {
+  max-width: 1700px;
+  margin: 0 auto;
+  padding: 1.5rem 4% 4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 3.5rem;
+}
+
+@media (max-width: 850px) {
+  .rows-container {
+    padding: 1rem 1rem 2.5rem;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .rows-container {
+    padding: 1rem 0.75rem 2.5rem;
+    gap: 1.25rem;
+  }
+}

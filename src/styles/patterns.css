@@ -1,0 +1,20 @@
+/* ================================================================
+   Vibeo — Background Patterns Entry Point
+   Imports individual pattern files for modularity.
+   ================================================================ */
+
+@import "./patterns/grid.css";
+@import "./patterns/dots.css";
+@import "./patterns/cross.css";
+@import "./patterns/waves.css";
+@import "./patterns/stripes.css";
+@import "./patterns/blueprint.css";
+@import "./patterns/bricks.css";
+@import "./patterns/plus.css";
+@import "./patterns/zigzag.css";
+@import "./patterns/circles.css";
+@import "./patterns/hexagons.css";
+
+[data-pattern="none"] body {
+    background-image: none;
+}

@@ -1,0 +1,125 @@
+/* ================================================================
+   MOVIE ROW (horizontal carousel)  — Yorumi-style
+   ================================================================ */
+/* ── movie-row layout (flex column via rows-container gap) ── */
+
+.row-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.9rem;
+}
+
+.row-title {
+    font-size: 1.25rem;
+    /* Larger, premium title */
+    font-weight: 800;
+    color: var(--c-text);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    letter-spacing: -0.01em;
+}
+
+.row-icon {
+    font-size: 1.1rem;
+}
+
+.row-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.row-arrow {
+    width: 40px;
+    /* Slightly larger */
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--c-border2);
+    background: var(--c-surface2);
+    color: var(--c-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0;
+    /* Hidden by default */
+    transform: translateX(10px);
+}
+
+.movie-row:hover .row-arrow {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.row-arrow--left {
+    transform: translateX(-10px);
+}
+
+.movie-row:hover .row-arrow--left {
+    transform: translateX(0);
+}
+
+.row-arrow:hover {
+    background: var(--c-surface3);
+    color: var(--c-text);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.row-see-all {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--c-accent-lt);
+    margin-left: 0.5rem;
+    cursor: pointer;
+}
+
+.row-see-all:hover {
+    text-decoration: underline;
+}
+
+/* ── Scrollable track ── */
+.row-track {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    padding-bottom: 1rem;
+    /* space for scrollbar or shadow */
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    /* firefox */
+    margin: 0 -1.5rem;
+    /* extend to edge */
+    padding: 0 1.5rem 1rem;
+    /* padding inside to offset negative margin */
+}
+
+.row-track::-webkit-scrollbar {
+    display: none;
+}
+
+.row-card-wrap {
+    flex: 0 0 auto;
+    width: var(--card-min-width);
+    /* mobile default */
+}
+
+@media (min-width: 600px) {
+    .row-card-wrap {
+        width: calc(var(--card-min-width) + 20px);
+    }
+}
+
+@media (min-width: 900px) {
+    .row-card-wrap {
+        width: calc(var(--card-min-width) + 40px);
+    }
+}
+
+@media (min-width: 1200px) {
+    .row-card-wrap {
+        width: calc(var(--card-min-width) + 80px);
+        /* Slightly wider cards for fuller feel */
+    }
+}

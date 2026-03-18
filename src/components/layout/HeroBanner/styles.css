@@ -1,0 +1,10 @@
+/* ================================================================
+   HERO BANNER — Modular Styles
+   Split into separate files for better maintainability.
+   ================================================================ */
+
+@import "./styles/layout.css";
+@import "./styles/content.css";
+@import "./styles/actions.css";
+@import "./styles/navigation.css";
+@import "./styles/overlay.css";

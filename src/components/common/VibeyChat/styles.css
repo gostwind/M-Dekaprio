@@ -1,0 +1,11 @@
+/* ═══════════════════════════════════════════════════════════════
+   VibeyChat — Modular Styles
+   gi Split nako into logical files for better maintenance. -cybersphinxxx
+   ═══════════════════════════════════════════════════════════════ */
+
+@import './styles/layout.css';
+@import './styles/fab.css';
+@import './styles/header.css';
+@import './styles/messages.css';
+@import './styles/cards.css';
+@import './styles/input.css';
