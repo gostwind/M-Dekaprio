@@ -8,7 +8,7 @@ export const useMoodMatchMovies = () => {
     return useQuery({
         queryKey: ['moodMatches', (favoriteMovies || []).map(m => m.id).join(',')],
         queryFn: async () => {
-            let endpoint = '/trending/movie/week';
+            let endpoint = '/tv/popular'; //CHANGED: From /trending/movie/week to /tv/popular
             let params = { page: 1 };
 
             if (favoriteMovies && favoriteMovies.length > 0) {
