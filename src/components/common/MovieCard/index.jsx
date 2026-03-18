@@ -7,7 +7,7 @@ import './styles.css';
 const TMDB_IMG_BASE = 'https://image.tmdb.org/t/p/w185';
 const FALLBACK_IMG = 'https://placehold.co/220x330/1a1a2e/6b6b8a?text=No+Poster';
 
-const MovieCard = React.memo(({ movie, onClick, animationDelay = '0ms', showMatchBadge = false }) => {
+const MovieCard = React.memo(({ movie, onClick, animationDelay = '0ms', showMatchBadge = false, isPopularSeries = false }) => {
     const [imgError, setImgError] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
     const [showDetails, setShowDetails] = useState(false);
@@ -44,9 +44,11 @@ const MovieCard = React.memo(({ movie, onClick, animationDelay = '0ms', showMatc
         return () => { if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current); };
     }, []);
 
+
     const handlePlayClick = (e) => {
         e.stopPropagation();
-        navigate(`/play/${movie.id}?type=${mediaType}`);
+        const type = isPopularSeries ? 'tv' : mediaType;
+        navigate(`/play/${movie.id}?type=${type}`);
     };
 
     const handleDetailsClick = (e) => {

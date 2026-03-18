@@ -4,7 +4,7 @@ import MovieCard from '../../common/MovieCard';
 import MovieCardSkeleton from '../../common/MovieCard/Skeleton';
 import './styles.css';
 
-const MovieRow = ({ title, movies = [], onCardClick, showBadge = false, icon = '', id, loading = false }) => {
+const MovieRow = ({ title, movies = [], onCardClick, showBadge = false, icon = '', id, loading = false, isPopularSeries = false }) => {
     const rowRef = useRef(null);
     const navigate = useNavigate();
 
@@ -84,6 +84,7 @@ const MovieRow = ({ title, movies = [], onCardClick, showBadge = false, icon = '
                                         onClick={onCardClick}
                                         animationDelay={`${index * 40}ms`}
                                         showMatchBadge={showBadge}
+                                        isPopularSeries={isPopularSeries}
                                     />
                                 </div>
                             ))

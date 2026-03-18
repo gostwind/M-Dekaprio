@@ -92,6 +92,7 @@ const Dashboard = () => {
                             movies={moodMatches}
                             loading={loading || moodMatchesLoading}
                             onCardClick={handleMoodMatchClick}
+                            isPopularSeries={true}
                             showBadge={true}
                         />
                     )}
