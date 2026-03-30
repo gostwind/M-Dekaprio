@@ -11,4 +11,8 @@ export const STREAM_PROVIDERS = [
         tvUrl: (id, season, episode) => `https://player.videasy.net/tv/${id}/${season}/${episode}`,
     }
 ];
+export const SITE_NAME = 'Vibeo';
+export const WATCH_PAGE_META = {
+    descriptionTemplate: `Watch {TITLE} For Free on {SITE}. In Full HD Quality, No Sign Up and One Click online streaming`
+};
 

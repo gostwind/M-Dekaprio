@@ -20,7 +20,7 @@ import ReviewSection from '@/components/common/ReviewSection';
 import CollectionGrid from '@/components/layout/CollectionGrid';
 import { useMovieDetail } from '@/hooks/useMovieDetail';
 import { useUserMovies } from '@/hooks/useUserMovies';
-import { TMDB_IMAGE_BASE, TMDB_BACKDROP_BASE } from '@/config/constants';
+import { TMDB_IMAGE_BASE, TMDB_BACKDROP_BASE, SITE_NAME, WATCH_PAGE_META } from '@/config/constants';
 import '@/components/common/Loading/styles.css';
 import './styles.css';
 
@@ -34,6 +34,107 @@ const Watch = () => {
     const { movie: movieMeta, similar, loading, error } = useMovieDetail(id, type);
     const [isTrailerOpen, setIsTrailerOpen] = useState(false);
     const { isWatchlisted, toggleWatchlist } = useUserMovies();
+
+
+    // ═══════════════════════════════════════════════════════════════
+// Update ALL Meta Tags Dynamically for Complete SEO
+// ═══════════════════════════════════════════════════════════════
+useEffect(() => {
+    if (movieMeta) {
+        // Get all derived values
+        const displayTitle = movieMeta?.title || movieMeta?.name;
+        const posterUrl = movieMeta?.poster_path ? `${TMDB_IMAGE_BASE}${movieMeta.poster_path}` : null;
+        const backdropUrl = movieMeta?.backdrop_path ? `${TMDB_BACKDROP_BASE}${movieMeta.backdrop_path}` : null;
+        
+        // Get current page URL
+        const currentPageUrl = window.location.href;
+        
+        // 1. UPDATE PAGE TITLE
+        const pageTitle = `Watch ${displayTitle} For Free on - ${SITE_NAME}`;
+        document.title = pageTitle;
+
+        // 2. UPDATE META DESCRIPTION
+        const metaDescription = document.querySelector('meta[name="description"]');
+        if (metaDescription) {
+            const description = WATCH_PAGE_META.descriptionTemplate
+                .replace('{TITLE}', displayTitle)
+                .replace('{SITE}', SITE_NAME);
+            metaDescription.setAttribute('content', description);
+        }
+
+        // 3. UPDATE META KEYWORDS
+        const metaKeywords = document.querySelector('meta[name="keywords"]');
+        if (metaKeywords) {
+            const keywords = `Watch ${displayTitle}, Stream ${displayTitle} In HD, Download ${displayTitle}, ${displayTitle} online, ${displayTitle} streaming`;
+            metaKeywords.setAttribute('content', keywords);
+        }
+
+        // 4. UPDATE META AUTHOR
+        const metaAuthor = document.querySelector('meta[name="author"]');
+        if (metaAuthor) {
+            metaAuthor.setAttribute('content', SITE_NAME);
+        }
+
+        // 5. UPDATE CANONICAL TAG (for SEO - prevents duplicate content)
+        let canonicalTag = document.querySelector('link[rel="canonical"]');
+        if (!canonicalTag) {
+            canonicalTag = document.createElement('link');
+            canonicalTag.setAttribute('rel', 'canonical');
+            document.head.appendChild(canonicalTag);
+        }
+        canonicalTag.setAttribute('href', currentPageUrl);
+
+        // 6. UPDATE ROBOTS META TAG (index & follow for SEO)
+        let robotsTag = document.querySelector('meta[name="robots"]');
+        if (!robotsTag) {
+            robotsTag = document.createElement('meta');
+            robotsTag.setAttribute('name', 'robots');
+            document.head.appendChild(robotsTag);
+        }
+        robotsTag.setAttribute('content', 'index, follow');
+
+        // 7. UPDATE OPEN GRAPH TITLE
+        const ogTitle = document.querySelector('meta[property="og:title"]');
+        if (ogTitle) {
+            ogTitle.setAttribute('content', `Watch ${displayTitle} For Free on - ${SITE_NAME}`);
+        }
+
+        // 8. UPDATE OPEN GRAPH DESCRIPTION
+        const ogDescription = document.querySelector('meta[property="og:description"]');
+        if (ogDescription) {
+            const description = WATCH_PAGE_META.descriptionTemplate
+                .replace('{TITLE}', displayTitle)
+                .replace('{SITE}', SITE_NAME);
+            ogDescription.setAttribute('content', description);
+        }
+
+        // 9. UPDATE OPEN GRAPH IMAGE (use backdrop for better social preview, fallback to poster)
+        const ogImage = document.querySelector('meta[property="og:image"]');
+        if (ogImage) {
+            const imageUrl = backdropUrl || posterUrl;
+            if (imageUrl) {
+                ogImage.setAttribute('content', imageUrl);
+            }
+        }
+
+        // 10. UPDATE OPEN GRAPH URL
+        let ogUrl = document.querySelector('meta[property="og:url"]');
+        if (!ogUrl) {
+            ogUrl = document.createElement('meta');
+            ogUrl.setAttribute('property', 'og:url');
+            document.head.appendChild(ogUrl);
+        }
+        ogUrl.setAttribute('content', currentPageUrl);
+
+        // 11. UPDATE OPEN GRAPH TYPE (always website for watch page)
+        const ogType = document.querySelector('meta[property="og:type"]');
+        if (ogType) {
+            ogType.setAttribute('content', 'website');
+        }
+
+    }
+}, [movieMeta, id]);
+
 
     if (error) {
         return (
