@@ -1,21 +1,15 @@
-/**
- * Play.jsx  ─ Dedicated Player Page "/play/:id"
- * ═══════════════════════════════════════════════════════════════
- * Supports both Movies and TV Series.
- * TV series: fetches seasons/episodes from TMDB, shows season
- * toggle, episode list panel, and auto-next episode.
- * ═══════════════════════════════════════════════════════════════
- */
-
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { MOOD_MOVIES } from '@/data/moodData';
 import { useUserMovies } from '@/hooks/useUserMovies';
-import { TMDB_API_KEY, STREAM_PROVIDERS, TMDB_IMAGE_BASE } from '@/config/constants';
+import { TMDB_API_KEY, STREAM_PROVIDERS, TMDB_IMAGE_BASE, DEFAULT_PROVIDER_KEY } from '@/config/constants';
 import '@/components/common/Loading/styles.css';
 import './styles.css';
 
-const provider = STREAM_PROVIDERS[0];
+// Find default provider
+const getDefaultProvider = () => {
+    return STREAM_PROVIDERS.find(p => p.key === DEFAULT_PROVIDER_KEY) || STREAM_PROVIDERS[0];
+};
 
 /* ── Helper ── */
 const TMDB_BASE = 'https://api.themoviedb.org/3';
@@ -43,16 +37,20 @@ const Play = () => {
     const watchStartTime = useRef(null);
 
     /* ── TV-only state ── */
-    const [seasons, setSeasons] = useState([]);           // list of season objects from TMDB
+    const [seasons, setSeasons] = useState([]);
     const [activeSeason, setActiveSeason] = useState(1);
-    const [episodes, setEpisodes] = useState([]);         // episodes for activeSeason
+    const [episodes, setEpisodes] = useState([]);
     const [activeEpisode, setActiveEpisode] = useState(1);
-    const [episodeMeta, setEpisodeMeta] = useState(null); // currently playing episode details
+    const [episodeMeta, setEpisodeMeta] = useState(null);
+
+    /* ── Server selection state ── */
+    const [activeProviderKey, setActiveProviderKey] = useState(DEFAULT_PROVIDER_KEY);
+    const activeProvider = STREAM_PROVIDERS.find(p => p.key === activeProviderKey) || getDefaultProvider();
 
     /* ── Embed URL ── */
     const embedUrl = isTV
-        ? provider.tvUrl(id, activeSeason, activeEpisode)
-        : provider.movieUrl(id);
+        ? activeProvider.tvUrl(id, activeSeason, activeEpisode)
+        : activeProvider.movieUrl(id);
 
     /* ── Fetch title ── */
     useEffect(() => {
@@ -69,7 +67,6 @@ const Play = () => {
                 addToContinueWatching(data);
 
                 if (isTV) {
-                    // Filter to only regular seasons (season_number > 0)
                     const regularSeasons = (data.seasons || []).filter(s => s.season_number > 0);
                     setSeasons(regularSeasons);
                 }
@@ -83,7 +80,6 @@ const Play = () => {
         tmdbGet(`/tv/${id}/season/${activeSeason}`).then(data => {
             if (data?.episodes) {
                 setEpisodes(data.episodes);
-                // Set current episode meta
                 const ep = data.episodes.find(e => e.episode_number === activeEpisode);
                 setEpisodeMeta(ep || data.episodes[0] || null);
             }
@@ -104,7 +100,6 @@ const Play = () => {
         setShowSlowWarning(false);
         clearTimeout(slowTimer.current);
 
-        // Reset tracking timer when embed URL changes
         watchStartTime.current = null;
 
         slowTimer.current = setTimeout(() => setShowSlowWarning(true), 10000);
@@ -114,7 +109,6 @@ const Play = () => {
     // Timer logic on mount/unmount context
     useEffect(() => {
         return () => {
-            // When user navigates away or unmounts, report the accumulated time
             if (watchStartTime.current) {
                 const endTime = Date.now();
                 const durationSeconds = Math.floor((endTime - watchStartTime.current) / 1000);
@@ -131,7 +125,6 @@ const Play = () => {
         setShowSlowWarning(false);
         clearTimeout(slowTimer.current);
 
-        // Start timing once the player iframe actually loads!
         if (!watchStartTime.current) {
             watchStartTime.current = Date.now();
         }
@@ -143,7 +136,6 @@ const Play = () => {
         if (nextEp) {
             setActiveEpisode(nextEp.episode_number);
         } else {
-            // Move to next season if available
             const currentSeasonIdx = seasons.findIndex(s => s.season_number === activeSeason);
             if (currentSeasonIdx < seasons.length - 1) {
                 const nextSeason = seasons[currentSeasonIdx + 1];
@@ -210,49 +202,75 @@ const Play = () => {
             {/* ── Main layout: player + episode panel ── */}
             <div className={`play-layout ${isTV ? 'play-layout--with-panel' : ''}`}>
 
-                {/* ── Player ── */}
-                <section className="play-player-section" aria-label={isTV ? 'Episode Player' : 'Movie Player'}>
-                    <div className="play-player-wrap">
-                        {/* Loading shimmer */}
-                        {!playerReady && !playerError && (
-                            <div className="play-player-shimmer">
-                                <div className="loading-center">
-                                    <div className="spinner" />
-                                    <p style={{ color: 'var(--c-muted)', fontSize: '0.85rem', marginTop: 8 }}>
-                                        Loading <strong style={{ color: 'var(--c-text)' }}>{provider.label}</strong>...
-                                    </p>
-                                    {showSlowWarning && (
-                                        <div className="play-slow-warning">
-                                            <p>Taking too long? We're experiencing high traffic.</p>
-                                        </div>
-                                    )}
+                {/* ── Player + Server Selection Container ── */}
+                <div className="play-player-container">
+                    {/* ── Player ── */}
+                    <section className="play-player-section" aria-label={isTV ? 'Episode Player' : 'Movie Player'}>
+                        <div className="play-player-wrap">
+                            {/* Loading shimmer */}
+                            {!playerReady && !playerError && (
+                                <div className="play-player-shimmer">
+                                    <div className="loading-center">
+                                        <div className="spinner" />
+                                        <p style={{ color: 'var(--c-muted)', fontSize: '0.85rem', marginTop: 8 }}>
+                                            Loading <strong style={{ color: 'var(--c-text)' }}>{activeProvider.label}</strong>...
+                                        </p>
+                                        {showSlowWarning && (
+                                            <div className="play-slow-warning">
+                                                <p>Taking too long? We're experiencing high traffic.</p>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
-                        )}
+                            )}
 
-                        {/* Error fallback */}
-                        {playerError && (
-                            <div className="play-player-error">
-                                <p style={{ color: 'var(--c-text)', fontWeight: 700, fontSize: '1.1rem' }}>Stream failed to load</p>
-                                <p style={{ color: 'var(--c-muted)', fontSize: '0.85rem', textAlign: 'center', maxWidth: 360 }}>
-                                    {provider.label} couldn't serve this title right now.
-                                </p>
-                            </div>
-                        )}
+                            {/* Error fallback */}
+                            {playerError && (
+                                <div className="play-player-error">
+                                    <p style={{ color: 'var(--c-text)', fontWeight: 700, fontSize: '1.1rem' }}>Stream failed to load</p>
+                                    <p style={{ color: 'var(--c-muted)', fontSize: '0.85rem', textAlign: 'center', maxWidth: 360 }}>
+                                        {activeProvider.label} couldn't serve this title right now.
+                                    </p>
+                                </div>
+                            )}
 
-                        <iframe
-                            key={embedUrl}
-                            src={embedUrl}
-                            title={isTV ? `${title} S${activeSeason}E${activeEpisode}` : `Watch ${title}`}
-                            allow="autoplay; fullscreen; picture-in-picture; encrypted-media; web-share"
-                            referrerPolicy="no-referrer-when-downgrade"
-                            scrolling="no"
-                            onLoad={handleLoad}
-                            onError={() => { setPlayerError(true); setPlayerReady(true); }}
-                            className={`play-iframe ${playerReady ? 'play-iframe--ready' : ''}`}
-                        />
+                            <iframe
+                                key={embedUrl}
+                                src={embedUrl}
+                                title={isTV ? `${title} S${activeSeason}E${activeEpisode}` : `Watch ${title}`}
+                                allow="autoplay; fullscreen; picture-in-picture; encrypted-media; web-share"
+                                referrerPolicy="no-referrer-when-downgrade"
+                                scrolling="no"
+                                onLoad={handleLoad}
+                                onError={() => { setPlayerError(true); setPlayerReady(true); }}
+                                className={`play-iframe ${playerReady ? 'play-iframe--ready' : ''}`}
+                            />
+                        </div>
+                    </section>
+
+                    {/* ── Server Selection Section ── */}
+                    <div className="play-server-selector">
+                        <div className="play-server-header">
+                            <span className="play-server-label">Streaming Server</span>
+                        </div>
+                        <div className="play-server-buttons">
+                            {STREAM_PROVIDERS.map(provider => (
+                                <button
+                                    key={provider.key}
+                                    className={`play-server-btn ${activeProviderKey === provider.key ? 'active' : ''}`}
+                                    onClick={() => {
+                                        setActiveProviderKey(provider.key);
+                                        setPlayerReady(false);
+                                        setPlayerError(false);
+                                    }}
+                                    title={`Switch to ${provider.label}`}
+                                >
+                                    {provider.label}
+                                </button>
+                            ))}
+                        </div>
                     </div>
-                </section>
+                </div>
 
                 {/* ── TV Episode Panel ── */}
                 {isTV && (
